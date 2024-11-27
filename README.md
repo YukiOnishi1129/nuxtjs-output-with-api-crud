@@ -4,17 +4,20 @@
 
 ### フロントエンド
 
-- typescript: 4.8.4
-- react: 18.2.0
-- react-dom: 18.2.0
-- next: 12.3.1
-- @fortawesome/react-fontawesom: 0.2.0
-- @fortawesome/free-solid-svg-icons: 6.2.0
+- typescript: 5.7.2
+- nuxt: 3.14.1592
+- vue: latest
+- vue-router: latest
+- @fortawesome/fontawesome-svg-core: 6.6.0
+- @fortawesome/free-brands-svg-icons: 6.6.0
+- @fortawesome/free-regular-svg-icons: 6.6.0
+- @fortawesome/free-solid-svg-icons: 6.6.0
+- @fortawesome/vue-fontawesome: 3.0.8
 
 ### バックエンド
 
 - nestjs: 9.0.0
-- prisma: 4.4.0
+- prisma: 5.22.0
 - typescript: 4.3.5
 
 ### その他
