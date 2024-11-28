@@ -113,8 +113,8 @@ docker ps
 
 各イメージに対応する コンテナ ID を確認
 
-- バックエンド: nestjs_output_with_crud_backend
-- フロントエンド: nextjs-output-with-api-crud_frontend
+- バックエンド: nuxtjs-output-with-api-crud-backend
+- フロントエンド: nuxtjs-output-with-api-crud-frontend
 - DB: mysql:8.0
 
 以下のコマンドで各コンテナのログを確認
