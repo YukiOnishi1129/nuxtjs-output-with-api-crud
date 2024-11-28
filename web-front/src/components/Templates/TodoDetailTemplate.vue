@@ -1,26 +1,39 @@
 <script setup lang="ts">
-import { inject } from "vue";
+import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import BaseLayout from "../Organisms/BaseLayout.vue";
 import InputForm from "../Atoms/InputForm.vue";
 import TextArea from "../Atoms/TextArea.vue";
-import { originTodoListInjectionKey } from "../../providers/TodoProviderInjectionKey";
+import { fetchTodoDetailApi } from "../../apis/todoApi";
+import type { TodoType } from "~/types/todo";
 
 const route = useRoute();
 const todoId = route.params.id;
 
-const originTodoList = inject(originTodoListInjectionKey);
-const todo = originTodoList
-  ? originTodoList.value.find((todo) => String(todo.id) === todoId)
-  : undefined;
+const targetTodo = ref<TodoType | undefined>(undefined);
+
+const fetchTodoDetail = async () => {
+  if (typeof todoId === "string") {
+    const paramTodoId = Number(todoId);
+    if (isNaN(paramTodoId)) return;
+    const data = await fetchTodoDetailApi(paramTodoId);
+    if (data && typeof data !== "string") {
+      targetTodo.value = data;
+    }
+  }
+};
+
+onMounted(() => {
+  fetchTodoDetail();
+});
 </script>
 
 <template>
   <BaseLayout title="Todo Detail">
-    <div v-if="todo" class="container">
+    <div v-if="targetTodo" class="container">
       <div class="area">
         <InputForm
-          v-model="todo.title"
+          v-model="targetTodo.title"
           disabled
           name="title"
           placeholder="Title"
@@ -28,7 +41,7 @@ const todo = originTodoList
       </div>
       <div class="area">
         <TextArea
-          v-model="todo.content"
+          v-model="targetTodo.content"
           disabled
           name="content"
           placeholder="Content"

@@ -6,20 +6,28 @@ import InputForm from "../Atoms/InputForm.vue";
 import TextArea from "../Atoms/TextArea.vue";
 import CommonButton from "../Atoms/CommonButton.vue";
 import { NAVIGATION_PATH } from "../../constants/navigation";
-import {
-  originTodoListInjectionKey,
-  handleUpdateTodoInjectionKey,
-} from "../../providers/TodoProviderInjectionKey";
+import { handleUpdateTodoInjectionKey } from "../../providers/TodoProviderInjectionKey";
+import { fetchTodoDetailApi } from "../../apis/todoApi";
+import type { TodoType } from "~/types/todo";
 
 const router = useRouter();
 const route = useRoute();
 const todoId = route.params.id;
 
-const originTodoList = inject(originTodoListInjectionKey);
+const targetTodo = ref<TodoType | undefined>(undefined);
+
 const handleUpdateTodo = inject(handleUpdateTodoInjectionKey);
-const todo = originTodoList
-  ? originTodoList.value.find((todo) => String(todo.id) === todoId)
-  : undefined;
+
+const fetchTodoDetail = async () => {
+  if (typeof todoId === "string") {
+    const paramTodoId = Number(todoId);
+    if (isNaN(paramTodoId)) return;
+    const data = await fetchTodoDetailApi(paramTodoId);
+    if (data && typeof data !== "string") {
+      targetTodo.value = data;
+    }
+  }
+};
 
 const handleSubmitUpdateTodo = (e: Event) => {
   e.preventDefault();
@@ -31,16 +39,28 @@ const handleSubmitUpdateTodo = (e: Event) => {
   handleUpdateTodo(String(todoId), title, content);
   router.push(`${NAVIGATION_PATH.TOP}`);
 };
+
+onMounted(() => {
+  fetchTodoDetail();
+});
 </script>
 
 <template>
   <BaseLayout title="Edit Todo" @submit.prevent="handleSubmitUpdateTodo">
-    <form v-if="todo" class="container">
+    <form v-if="targetTodo" class="container">
       <div class="area">
-        <InputForm v-model="todo.title" name="title" placeholder="Title" />
+        <InputForm
+          v-model="targetTodo.title"
+          name="title"
+          placeholder="Title"
+        />
       </div>
       <div class="area">
-        <TextArea v-model="todo.content" name="content" placeholder="Content" />
+        <TextArea
+          v-model="targetTodo.content"
+          name="content"
+          placeholder="Content"
+        />
       </div>
       <div class="area">
         <CommonButton type="submit" label="Update" />
