@@ -82,7 +82,7 @@ url: http://localhost
 ```
 DBMS: mysql: 8.0
 host: 127.0.0.1
-database: NEXTJS_OUTPUT_WITH_CRUD_DB
+database: NUXTJS_OUTPUT_WITH_CRUD_DB
 user: user
 password: pass
 port: 3306
