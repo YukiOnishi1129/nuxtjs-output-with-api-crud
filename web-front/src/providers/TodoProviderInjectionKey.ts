@@ -10,6 +10,9 @@ export const showTodoListInjectionKey: InjectionKey<Ref<TodoType[]>> =
 export const searchKeywordInjectionKey: InjectionKey<Ref<string>> =
   Symbol() as InjectionKey<Ref<string>>;
 
+export const fetchTodoListInjectionKey: InjectionKey<() => Promise<void>> =
+  Symbol() as InjectionKey<() => Promise<void>>;
+
 export const handleAddTodoInjectionKey: InjectionKey<
   (title: string, content: string) => void
 > = Symbol() as InjectionKey<(title: string, content: string) => void>;

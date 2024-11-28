@@ -1,10 +1,20 @@
 import { ref, computed } from "vue";
-import { INIT_TODO_LIST, INIT_UNIQUE_ID } from "../constants/data";
+import {
+  fetchTodoListApi,
+  createTodoApi,
+  updateTodoApi,
+  deleteTodoApi,
+} from "../apis/todoApi";
+import type { TodoType } from "../types/todo";
 
 export const useTodoProvider = () => {
-  const originTodoList = ref(INIT_TODO_LIST);
-  const uniqueId = ref(INIT_UNIQUE_ID);
+  const originTodoList = ref<Array<TodoType>>([]);
   const searchKeyword = ref("");
+
+  const fetchTodoList = async () => {
+    const data = await fetchTodoListApi();
+    if (Array.isArray(data)) originTodoList.value = data;
+  };
 
   // 表示用のTodoリストを返す算出プロパティ
   const showTodoList = computed(() => {
@@ -15,39 +25,35 @@ export const useTodoProvider = () => {
     });
   });
 
-  const handleAddTodo = (title: string, content: string) => {
+  const handleAddTodo = async (title: string, content: string) => {
     if (title.trim() !== "" && content.trim() !== "") {
-      const nextUniqueId = uniqueId.value + 1;
-      originTodoList.value.push({
-        id: nextUniqueId,
-        title: title.trim(),
-        content: content.trim(),
-      });
-
-      // 採番IDを更新
-      uniqueId.value = nextUniqueId;
+      const data = await createTodoApi(title, content);
+      if (data && typeof data !== "string") originTodoList.value.push(data);
     }
   };
 
-  const handleUpdateTodo = (
+  const handleUpdateTodo = async (
     targetId: string,
     title: string,
     content: string
   ) => {
-    originTodoList.value = originTodoList.value.map((todo) => {
-      if (String(todo.id) === targetId) {
-        return {
-          ...todo,
-          title: title.trim(),
-          content: content.trim(),
-        };
-      }
-      return todo;
-    });
+    if (title.trim() === "" || content.trim() === "") return;
+    const todoId = Number(targetId);
+    if (Number.isNaN(todoId)) return;
+    const data = await updateTodoApi(todoId, title, content);
+    if (data && typeof data !== "string") {
+      const newTodoList = originTodoList.value.map((todo) => {
+        return todo.id === todoId ? data : todo;
+      });
+      originTodoList.value = newTodoList;
+    }
   };
 
   const handleDeleteTodo = (targetId: string, targetTitle: string) => {
     if (window.confirm(`「${targetTitle}」を削除しますか？`)) {
+      const todoId = Number(targetId);
+      if (Number.isNaN(todoId)) return;
+      deleteTodoApi(Number(targetId));
       const newTodoList = originTodoList.value.filter((todo) => {
         return String(todo.id) !== targetId;
       });
@@ -59,6 +65,7 @@ export const useTodoProvider = () => {
     originTodoList,
     showTodoList,
     searchKeyword,
+    fetchTodoList,
     handleAddTodo,
     handleUpdateTodo,
     handleDeleteTodo,
